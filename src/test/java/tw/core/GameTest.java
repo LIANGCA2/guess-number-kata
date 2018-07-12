@@ -4,11 +4,15 @@ package tw.core;/*
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tw.core.exception.OutOfGuessCountException;
 import tw.core.generator.AnswerGenerator;
 import tw.core.model.GuessResult;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,19 +27,64 @@ public class GameTest {
         when(answerGenerator.generate()).thenReturn(actualAnswer);
         game = new Game(answerGenerator);
     }
+    @Test
+    public void should_throws_Exception_when_guess_input_is_over_6_times() throws Exception {
+
+        //given
+//        excuteSuccessGuess();
+        GuessResult guess = null;
+        try {
+            for(int i = 0;i<7;i++){
+                guess = game.guess(Answer.createAnswer("6 2 3 4"));
+            }
+            fail("Guess count cant over 6!");
+
+        }catch (OutOfGuessCountException e){
+
+        }
+    }
+
+    @Test
+    public void should_return_Success_when_guess_input_is_right() throws Exception {
+
+        //given
+//        excuteSuccessGuess();
+        GuessResult guess = null;
+        try {
+            for(int i = 0;i<2;i++){
+                guess = game.guess(Answer.createAnswer("1 2 3 4"));
+            }
+        }catch (OutOfGuessCountException e){
+
+        }
+    }
+
 
 
     @Test
     public void should_get_the_success_status_when_guess_input_is_correct() throws Exception {
-
         //given
 //        excuteSuccessGuess();
         GuessResult guess = game.guess(Answer.createAnswer("1 2 3 4"));
+
         //when
         //then
         assertThat(guess.getResult(), is("4A0B"));
 
     }
+
+
+
+    @Test
+    public void should_return_guess_List_when_guess_input_answer() throws Exception {
+
+        GuessResult guess =  game.guess(Answer.createAnswer("6 2 3 4"));
+        List<GuessResult> guessResults = game.guessHistory();
+        assertThat(guessResults.get(0).getResult(),is("3A0B"));
+        assertThat(guessResults.get(0).getInputAnswer().toString(),is("6 2 3 4"));
+
+    }
+
 
 
 }
